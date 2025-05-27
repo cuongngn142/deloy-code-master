@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lỗi | Code Master</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header class="header fixed"><%- include('partials/header') %></header>
+    
+    <main class="error-main">
+        <div class="error-container">
+            <h1>Đã xảy ra lỗi</h1>
+            <p><%= error %></p>
+            <a href="/practice" class="btn-back">Quay lại trang bài tập</a>
+        </div>
+    </main>
+
+    <footer><%- include('partials/footer') %></footer>
+</body>
+</html>

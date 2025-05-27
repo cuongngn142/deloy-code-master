@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Giải Bài Tập | Code Master</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/solve.css" />
+    <!-- Monaco Editor CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.30.1/min/vs/loader.min.js"></script>
+  </head>
+  <body data-user-id="<%= user ? user.id : 0 %>">
+
+    <main class="solve-main">
+      <div class="main-content">
+        <div class="problem-section">
+          <h1><%= baiTap.TieuDe %></h1>
+          <div class="problem-meta">
+            <span class="difficulty">
+              <strong>Độ khó:</strong> <%= baiTap.MucDoKho %>
+            </span>
+            <span class="topic">
+              <strong>Chủ đề:</strong> <%= baiTap.TenChuDe %>
+            </span>
+          </div>
+          <div class="problem-description">
+            <strong>Mô tả bài tập:</strong> <%= baiTap.MoTa %>
+          </div>
+        </div>
+
+        <div class="code-section">
+          <div class="code-header">
+            <select id="language">
+              <% ngonNgu.forEach(function(lang) { %>
+              <option value="<%= lang.TenNgonNgu.toLowerCase() %>">
+                <%= lang.TenNgonNgu %>
+              </option>
+              <% }); %>
+            </select>
+            <button id="runBtn">Chạy thử</button>
+            <button id="submitBtn">Nộp bài</button>
+          </div>
+          <div id="editor" style="height: 400px; border: 1px solid #ccc"></div>
+          <div id="result" class="hidden" style="margin-top: 15px">
+            <h3>Kết quả:</h3>
+            <div
+              class="result-content"
+              style="
+                white-space: pre-wrap;
+                background: #222;
+                color: #eee;
+                padding: 10px;
+                border-radius: 5px;
+              "
+            ></div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      // Hàm chuẩn hóa newline thành \n và trim khoảng trắng 2 đầu
+      function normalizeNewlines(str) {
+        return str.replace(/\r\n/g, "\n").trim();
+      }
+
+      // Monaco Editor setup
+      require.config({
+        paths: {
+          vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.30.1/min/vs",
+        },
+      });
+
+      let editor;
+
+      require(["vs/editor/editor.main"], function () {
+        editor = monaco.editor.create(document.getElementById("editor"), {
+          value: "// Viết code của bạn ở đây\n",
+          language: "javascript",
+          theme: "vs-dark",
+          automaticLayout: true,
+        });
+
+        // Chạy thử khi bấm nút
+        document.getElementById("runBtn").addEventListener("click", runCode);
+        // Nộp bài
+        document
+          .getElementById("submitBtn")
+          .addEventListener("click", submitCheck);
+      });
+
+      async function runCode() {
+        if (!editor) {
+          alert("Editor chưa được khởi tạo");
+          return;
+        }
+
+        const code = editor.getValue();
+        const language = document.getElementById("language").value;
+        let version = "";
+
+        switch (language) {
+          case "javascript":
+          case "nodejs":
+            version = "18.15.0";
+            break;
+          case "python":
+          case "python3":
+          case "py":
+          case "py3":
+            version = "3.10.0";
+            break;
+          case "java":
+            version = "15.0.2";
+            break;
+          default:
+            version = "*";
+            break;
+        }
+
+        try {
+          const res = await fetch("https://emkc.org/api/v2/piston/execute", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              language,
+              version,
+              files: [{ name: "main", content: code }],
+            }),
+          });
+
+          const result = await res.json();
+
+          const resultDiv = document.getElementById("result");
+          resultDiv.classList.remove("hidden");
+
+          if (result.error) {
+            resultDiv.querySelector(".result-content").textContent =
+              result.error;
+          } else {
+            resultDiv.querySelector(".result-content").textContent =
+              result.run.stdout || "Không có output";
+          }
+        } catch (error) {
+          alert("Lỗi khi chạy code: " + error.message);
+        }
+      }
+
+      async function submitCheck() {
+        const resultDiv = document.getElementById("result");
+        if (resultDiv.classList.contains("hidden")) {
+          alert("Bạn chưa chạy thử code, vui lòng bấm 'Chạy thử' trước.");
+          return;
+        }
+
+        let userOutput = normalizeNewlines(
+          resultDiv.querySelector(".result-content").textContent
+        );
+
+        if (!userOutput) {
+          alert("Không tìm thấy kết quả đầu ra, vui lòng chạy thử lại.");
+          return;
+        }
+
+        const maBaiTap = "<%= baiTap.MaBaiTap %>";
+        const maNguoiDung = document.body.getAttribute("data-user-id");
+        const maNgonNgu = document.getElementById("language").value;
+
+        try {
+          const res = await fetch(`/api/testcases/${maBaiTap}`);
+          if (!res.ok) throw new Error("Lỗi lấy test cases");
+          const testCases = await res.json();
+
+          let matchedTestCase = null;
+
+          for (const testCase of testCases) {
+            const expectedOutput = normalizeNewlines(testCase.DauRaMongDoi);
+            const kieuDuLieu = testCase.KieuDuLieu.toLowerCase();
+
+            let userOutputFormat, expectedOutputFormat;
+            let isMatch = false;
+
+            switch (kieuDuLieu) {
+              case "string":
+                // So sánh chuỗi trim 2 đầu
+                userOutputFormat = userOutput.trim();
+                expectedOutputFormat = expectedOutput.trim();
+                isMatch = userOutputFormat === expectedOutputFormat;
+                break;
+
+              case "number":
+                // Chuyển sang number rồi so sánh
+                userOutputFormat = Number(userOutput);
+                expectedOutputFormat = Number(expectedOutput);
+                isMatch = userOutputFormat === expectedOutputFormat;
+                break;
+
+              case "boolean":
+                // Chuyển sang boolean rồi so sánh
+                try {
+                  userOutputFormat = JSON.parse(userOutput.toLowerCase());
+                  expectedOutputFormat = JSON.parse(
+                    expectedOutput.toLowerCase()
+                  );
+                  isMatch = userOutputFormat === expectedOutputFormat;
+                } catch {
+                  isMatch = false;
+                }
+                break;
+
+              case "array":
+              case "object":
+                // JSON.parse rồi so sánh chuỗi JSON
+                try {
+                  userOutputFormat = JSON.parse(userOutput);
+                  expectedOutputFormat = JSON.parse(expectedOutput);
+                  isMatch =
+                    JSON.stringify(userOutputFormat) ===
+                    JSON.stringify(expectedOutputFormat);
+                } catch {
+                  isMatch = false;
+                }
+                break;
+
+              default:
+                // Mặc định so sánh chuỗi bình thường
+                isMatch = userOutput === expectedOutput;
+                break;
+            }
+
+            if (isMatch) {
+              matchedTestCase = testCase;
+              break;
+            }
+          }
+
+          if (matchedTestCase) {
+            alert("🎉 Pass! Bạn đã đạt yêu cầu bài tập.");
+
+            // Gửi kết quả test case (lưu trực tiếp vào KetQuaBaiNop)
+            const saveRes = await fetch("/api/solve/saveResult", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                MaBaiTap: maBaiTap,
+                MaNguoiDung: maNguoiDung,
+                MaNgonNgu: maNgonNgu,
+                MaTest: matchedTestCase.MaTest,
+                DauRaThucTe: userOutput,
+                DatYeuCau: 1, // true = pass
+                Diem: 10,
+              }),
+            });
+
+            const saveData = await saveRes.json();
+
+            if (saveData.success) {
+              alert("✅ Kết quả đã được lưu thành công!");
+            } else {
+              alert("❌ Lỗi khi lưu kết quả.");
+            }
+          } else {
+            alert("❌ Chưa đúng, vui lòng kiểm tra lại đầu ra.");
+          }
+        } catch (err) {
+          console.error(err);
+          alert("Có lỗi xảy ra khi kiểm tra bài.");
+        }
+      }
+    </script>
+  </body>
+</html>

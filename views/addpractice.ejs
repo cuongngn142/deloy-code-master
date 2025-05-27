@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thêm Bài Tập Mới</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+  </head>
+  <body>
+    <div class="container mt-5">
+      <h2 class="mb-4">Thêm Bài Tập Mới</h2>
+      <form action="/practice/add" method="POST">
+        <div class="form-group">
+          <label for="title">Tiêu đề bài tập:</label>
+          <input
+            type="text"
+            class="form-control"
+            id="title"
+            name="title"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="description">Mô tả bài tập:</label>
+          <textarea
+            class="form-control"
+            id="description"
+            name="description"
+            rows="4"
+            required
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="difficulty">Độ khó:</label>
+          <select class="form-control" id="difficulty" name="difficulty">
+            <option value="Dễ">Dễ</option>
+            <option value="Trung Bình">Trung Bình</option>
+            <option value="Khó">Khó</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="topic">Chủ đề:</label>
+          <select class="form-control" id="topic" name="topic" required>
+            <option value="">Chọn chủ đề</option>
+            <% if (typeof chuDe !== 'undefined') { %> <%
+            chuDe.forEach(function(topic) { %>
+            <option value="<%= topic.MaChuDe %>"><%= topic.TenChuDe %></option>
+            <% }); %> <% } %>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="input">Dữ liệu đầu vào:</label>
+          <textarea
+            class="form-control"
+            id="input"
+            name="input"
+            rows="3"
+            required
+            placeholder="Nhập dữ liệu đầu vào cho bài tập"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="expected">Đầu ra mong đợi:</label>
+          <textarea
+            class="form-control"
+            id="expected"
+            name="expected"
+            rows="3"
+            required
+            placeholder="Nhập kết quả đầu ra mong đợi"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="dataType">Kiểu bài tập (kiểu dữ liệu đầu ra):</label>
+          <select class="form-control" id="dataType" name="dataType" required>
+            <option value="">Chọn kiểu dữ liệu</option>
+            <option value="number">Number</option>
+            <option value="string">String</option>
+            <option value="boolean">Boolean</option>
+            <option value="array">Array</option>
+            <option value="object">Object</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Thêm bài tập</button>
+        <a href="/practice" class="btn btn-secondary">Hủy</a>
+      </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
+</html>

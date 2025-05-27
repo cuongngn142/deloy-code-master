@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- reset css -->
+    <link rel="stylesheet" href="./css/reset.css" />
+    <!-- embed fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Sen:wght@700&display=swap" rel="stylesheet" />
+    <link rel="icon" href="./images/img/bg-logo-web.png" type="image/png" />
+    <link rel="stylesheet" href="./css/style.css" />
+    <!-- Thay đổi từ -->
+    <link rel="stylesheet" href="./css/reset.css" />
+    <link rel="stylesheet" href="./css/style.css" />
+    <link rel="stylesheet" href="./css/settings.css" />
+    
+    <!-- Thành -->
+    <link rel="stylesheet" href="/css/reset.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/settings.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <title>Cài Đặt | Code Master</title>
+</head>
+<body>
+    <!-- header -->
+    <header class="header fixed">
+        <%- include('partials/header') %>
+    </header>
+
+    <!-- main -->
+    <main>
+        <div class="settings-container">
+            <div class="settings-sidebar">
+                <h2>Cài Đặt</h2>
+                <ul class="settings-nav">
+                    <li class="active" data-tab="general">
+                        <i class="fas fa-cog"></i> Chung
+                    </li>
+                    <li data-tab="notifications">
+                        <i class="fas fa-bell"></i> Thông Báo
+                    </li>
+                    <li data-tab="privacy">
+                        <i class="fas fa-lock"></i> Quyền Riêng Tư
+                    </li>
+                    <li data-tab="appearance">
+                        <i class="fas fa-paint-brush"></i> Giao Diện
+                    </li>
+                </ul>
+            </div>
+
+            <div class="settings-content">
+                <!-- General Settings -->
+                <div class="settings-panel active" id="general">
+                    <h3>Cài Đặt Chung</h3>
+                    <form id="generalSettingsForm">
+                        <div class="form-group">
+                            <label>Ngôn ngữ</label>
+                            <select name="language">
+                                <option value="vi">Tiếng Việt</option>
+                                <option value="en">English</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Múi giờ</label>
+                            <select name="timezone">
+                                <option value="Asia/Ho_Chi_Minh">Việt Nam (GMT+7)</option>
+                                <option value="Asia/Bangkok">Bangkok (GMT+7)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-save">Lưu thay đổi</button>
+                    </form>
+                </div>
+
+                <!-- Notifications Settings -->
+                <div class="settings-panel" id="notifications">
+                    <h3>Cài Đặt Thông Báo</h3>
+                    <form id="notificationSettingsForm">
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="emailNotifications">
+                                Nhận thông báo qua email
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="pushNotifications">
+                                Thông báo đẩy trên trình duyệt
+                            </label>
+                        </div>
+                        <button type="submit" class="btn-save">Lưu thay đổi</button>
+                    </form>
+                </div>
+
+                <!-- Privacy Settings -->
+                <div class="settings-panel" id="privacy">
+                    <h3>Cài Đặt Quyền Riêng Tư</h3>
+                    <form id="privacySettingsForm">
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="profileVisibility">
+                                Hiển thị hồ sơ với mọi người
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="activityVisibility">
+                                Hiển thị hoạt động học tập
+                            </label>
+                        </div>
+                        <button type="submit" class="btn-save">Lưu thay đổi</button>
+                    </form>
+                </div>
+
+                <!-- Appearance Settings -->
+                <div class="settings-panel" id="appearance">
+                    <h3>Cài Đặt Giao Diện</h3>
+                    <form id="appearanceSettingsForm">
+                        <div class="form-group">
+                            <label>Chế độ</label>
+                            <div class="theme-options">
+                                <label class="theme-option">
+                                    <input type="radio" name="theme" value="light">
+                                    <span class="theme-preview light"></span>
+                                    <span>Sáng</span>
+                                </label>
+                                <label class="theme-option">
+                                    <input type="radio" name="theme" value="dark">
+                                    <span class="theme-preview dark"></span>
+                                    <span>Tối</span>
+                                </label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-save">Lưu thay đổi</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- footer -->
+    <footer>
+        <%- include('partials/footer') %>
+    </footer>
+
+    <script>
+        // Tab switching
+        const navItems = document.querySelectorAll('.settings-nav li');
+        const panels = document.querySelectorAll('.settings-panel');
+
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const tabId = item.dataset.tab;
+                
+                // Update active states
+                navItems.forEach(nav => nav.classList.remove('active'));
+                panels.forEach(panel => panel.classList.remove('active'));
+                
+                item.classList.add('active');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // Form submissions
+        const forms = document.querySelectorAll('form');
+        forms.forEach(form => {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData);
+
+                try {
+                    const response = await fetch(`/settings/${e.target.id}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await response.json();
+                    if (result.success) {
+                        alert('Cài đặt đã được lưu!');
+                    } else {
+                        alert(result.message || 'Có lỗi xảy ra');
+                    }
+                } catch (error) {
+                    alert('Có lỗi xảy ra khi lưu cài đặt');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

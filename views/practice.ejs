@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- reset css -->
+    <link rel="stylesheet" href="./css/reset.css" />
+    <!-- embed fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Sen:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" href="./images/img/bg-logo-web.png" type="image/png" />
+
+    <link rel="stylesheet" href="/css/reset.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/practice.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <title>Luyện Tập | Code Master</title>
+  </head>
+  <body>
+    <!-- header -->
+    <header class="header fixed"><%- include('partials/header') %></header>
+
+    <!-- main -->
+    <main class="practice-main">
+      <!-- Phần filter và tìm kiếm -->
+      <div class="main-content">
+        <div class="practice-filter">
+          <div class="search-box">
+            <input type="text" placeholder="Tìm kiếm bài tập..." />
+            <i class="fas fa-search"></i>
+          </div>
+          <div class="filter-options">
+            <select class="difficulty-filter">
+              <option value="">Cấp độ</option>
+              <option value="Dễ">Dễ</option>
+              <option value="Trung Bình">Trung Bình</option>
+              <option value="Khó">Khó</option>
+            </select>
+            <select class="topic-filter">
+              <option value="">Chủ đề</option>
+              <% if (typeof topics !== 'undefined') { %> <%
+              topics.forEach(function(topic) { %>
+              <option value="<%= topic.MaChuDe %>">
+                <%= topic.TenChuDe %>
+              </option>
+              <% }); %> <% } %>
+            </select>
+            <% if (user && user.vaiTro && user.vaiTro.trim() === 'Admin') { %>
+            <button class="btn-add-topic">
+              <i class="fas fa-plus"></i>
+              Thêm chủ đề
+            </button>
+            <button
+              class="btn-topic-detail"
+              onclick="window.location.href='/topic/detail'"
+            >
+              <i class="fas fa-list"></i>
+              Chi tiết chủ đề
+            </button>
+            <button class="btn-add-practice">
+              <i class="fas fa-plus"></i>
+              Thêm bài tập
+            </button>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Phần hiển thị danh sách bài tập -->
+        <div class="practice-list">
+          <% if (typeof practices !== 'undefined' && practices.length > 0) { %>
+          <% practices.forEach(function(practice) { %>
+          <div
+            class="practice-item"
+            data-difficulty="<%= practice.MucDoKho %>"
+            data-topic="<%= practice.MaChuDe %>"
+          >
+            <div class="practice-info">
+              <div class="practice-meta">
+                <h3 class="practice-title"><%= practice.TieuDe %></h3>
+                <p class="practice-difficulty">
+                  Độ khó:
+                  <strong><%= practice.MucDoKho %></strong>
+                </p>
+                <p class="practice-topic">
+                  Chủ đề:
+                  <strong><%= practice.TenChuDe %></strong>
+                </p>
+                <p class="practice-description">Mô Tả: <%= practice.MoTa %></p>
+              </div>
+              <div class="practice-buttons">
+                <button
+                  class="btn-solve"
+                  onclick="window.location.href='/practice/solve/<%= practice.MaBaiTap %>'"
+                >
+                  Giải bài
+                </button>
+                <% if (user && user.vaiTro && user.vaiTro.trim() === 'Admin') {
+                %>
+                <button
+                  class="btn-details"
+                  onclick="window.location.href='/practice/details/<%= practice.MaBaiTap %>'"
+                >
+                  Chi tiết
+                </button>
+                <% } %>
+              </div>
+            </div>
+          </div>
+          <% }); %> <% } else { %>
+          <p>Chưa có bài tập nào.</p>
+          <% } %>
+        </div>
+      </div>
+    </main>
+    <!--Modal login-->
+    <%- include('partials/login') %>
+    <!-- footer -->
+    <footer><%- include('partials/footer') %></footer>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.querySelector(".search-box input");
+        const difficultyFilter = document.querySelector(".difficulty-filter");
+        const topicFilter = document.querySelector(".topic-filter");
+        const practiceItems = document.querySelectorAll(".practice-item");
+
+        function applyFilters() {
+          const searchTerm = searchInput.value.toLowerCase().trim();
+          const selectedDifficulty = difficultyFilter.value;
+          const selectedTopic = topicFilter.value;
+
+          practiceItems.forEach((item) => {
+            const title = item
+              .querySelector(".practice-title")
+              .textContent.toLowerCase();
+            const itemDifficulty = item.getAttribute("data-difficulty");
+            const itemTopic = item.getAttribute("data-topic");
+
+            const matchesSearch = title.includes(searchTerm);
+            const matchesDifficulty =
+              !selectedDifficulty || itemDifficulty === selectedDifficulty;
+            const matchesTopic = !selectedTopic || itemTopic === selectedTopic;
+
+            if (matchesSearch && matchesDifficulty && matchesTopic) {
+              item.style.display = "block";
+            } else {
+              item.style.display = "none";
+            }
+          });
+        }
+
+        searchInput.addEventListener("input", applyFilters);
+        difficultyFilter.addEventListener("change", applyFilters);
+        topicFilter.addEventListener("change", applyFilters);
+
+        // Xử lý nút giải bài
+        const solveBtns = document.querySelectorAll(".btn-solve");
+        solveBtns.forEach((btn) => {
+          btn.addEventListener("click", function () {
+            console.log("Solving practice...");
+          });
+        });
+
+        // Xử lý nút thêm bài tập
+        const addPracticeBtn = document.querySelector(".btn-add-practice");
+        if (addPracticeBtn) {
+          addPracticeBtn.addEventListener("click", function () {
+            window.location.href = "/practice/add";
+          });
+        }
+      });
+    </script>
+
+    <!-- Modal thêm chủ đề -->
+    <div class="modal" id="addTopicModal">
+      <div class="modal-content">
+        <h2>Thêm Chủ Đề Mới</h2>
+        <form id="addTopicForm">
+          <div class="form-group">
+            <label for="topicName">Tên chủ đề:</label>
+            <input type="text" id="topicName" name="TenChuDe" required />
+            <!-- Đổi từ tenChuDe thành TenChuDe -->
+          </div>
+          <div class="form-group">
+            <label for="topicDesc">Mô tả:</label>
+            <textarea id="topicDesc" name="MoTa" rows="3"></textarea>
+            <!-- Đổi từ moTa thành MoTa -->
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">Thêm</button>
+            <button
+              type="button"
+              class="btn-secondary"
+              onclick="closeTopicModal()"
+            >
+              Hủy
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <script src="./controllers/addsubjectController.js"></script>
+  </body>
+</html>
+
+<script>
+  const addTopicBtn = document.querySelector(".btn-add-topic");
+  const addTopicModal = document.getElementById("addTopicModal");
+  const addTopicForm = document.getElementById("addTopicForm");
+
+  // Mở modal khi click nút thêm chủ đề
+  addTopicBtn.addEventListener("click", function () {
+    addTopicModal.style.display = "flex";
+  });
+
+  // Đóng modal khi ấn nút hủy
+  function closeTopicModal() {
+    addTopicModal.style.display = "none";
+  }
+
+  // Đóng modal khi ấn bên ngoài
+  window.addEventListener("click", function (event) {
+    if (event.target === addTopicModal) {
+      closeTopicModal();
+    }
+  });
+
+  // Xử lý form thêm chủ đề
+  addTopicForm.addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    const data = {
+      TenChuDe: formData.get("TenChuDe"),
+      MoTa: formData.get("MoTa"),
+    };
+
+    try {
+      const response = await fetch("/api/topics", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        alert("Thêm chủ đề thành công!");
+        closeTopicModal();
+        location.reload();
+      } else {
+        const errorData = await response.json();
+        alert(errorData.message || "Có lỗi xảy ra khi thêm chủ đề!");
+      }
+    } catch (error) {
+      console.error("Lỗi:", error);
+      alert("Có lỗi xảy ra khi thêm chủ đề!");
+    }
+  });
+</script>

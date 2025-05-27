@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blog | Code Master</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/blog.css" />
+  </head>
+  <body>
+    <header class="header fixed"><%- include('partials/header') %></header>
+
+    <main class="blog-main">
+      <div class="blog-container">
+        <div class="blog-header">
+          <h1>Blog Lập Trình</h1>
+          <% if (typeof user !== 'undefined' && user && user.Role === 'admin') {
+          %>
+          <button class="create-post-btn">
+            <i class="fas fa-plus"></i> Tạo bài viết mới
+          </button>
+          <% } %>
+        </div>
+
+        <div class="blog-filters">
+          <div class="search-bar">
+            <input type="text" placeholder="Tìm kiếm bài viết..." />
+            <button><i class="fas fa-search"></i></button>
+          </div>
+          <div class="category-filter">
+            <select>
+              <option value="">Tất cả chủ đề</option>
+              <option value="frontend">Frontend</option>
+              <option value="backend">Backend</option>
+              <option value="database">Database</option>
+              <option value="algorithm">Thuật toán</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="blog-grid">
+          <!-- Mẫu bài viết -->
+          <article class="blog-card">
+            <div class="blog-card-image">
+              <img src="/images/blog/sample-1.jpg" alt="Blog thumbnail" />
+            </div>
+            <div class="blog-card-content">
+              <div class="blog-card-category">Frontend</div>
+              <h2 class="blog-card-title">
+                Tìm hiểu về React Hooks trong 10 phút
+              </h2>
+              <p class="blog-card-excerpt">
+                React Hooks là một tính năng mới được giới thiệu từ phiên bản
+                React 16.8...
+              </p>
+              <div class="blog-card-footer">
+                <div class="author">
+                  <img
+                    src="/images/img/avatar-default.png"
+                    alt="Author avatar"
+                  />
+                  <span>John Doe</span>
+                </div>
+                <div class="date">20/12/2023</div>
+              </div>
+            </div>
+          </article>
+          <!-- Kết thúc mẫu bài viết -->
+        </div>
+
+        <div class="pagination">
+          <button class="prev-btn" disabled>
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <div class="page-numbers">
+            <span class="active">1</span>
+            <span>2</span>
+            <span>3</span>
+            <span>...</span>
+            <span>10</span>
+          </div>
+          <button class="next-btn"><i class="fas fa-chevron-right"></i></button>
+        </div>
+      </div>
+    </main>
+
+    <footer><%- include('partials/footer') %></footer>
+  </body>
+</html>

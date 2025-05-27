@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chỉnh Sửa Bài Tập | Code Master</title>
+    <link rel="stylesheet" href="/css/reset.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/practice.css">
+</head>
+<body>
+    
+    <main class="practice-main">
+        <div class="main-content">
+            <form id="editPracticeForm" class="practice-form">
+                <h1>Chỉnh Sửa Bài Tập</h1>
+                
+                <div class="form-group">
+                    <label for="TieuDe">Tiêu đề:</label>
+                    <input type="text" id="TieuDe" name="TieuDe" value="<%= practice.TieuDe %>" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="MoTa">Mô tả:</label>
+                    <textarea id="MoTa" name="MoTa" required><%= practice.MoTa %></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="MucDoKho">Độ khó:</label>
+                    <select id="MucDoKho" name="MucDoKho" required>
+                        <option value="Dễ" <%= practice.MucDoKho === 'Dễ' ? 'selected' : '' %>>Dễ</option>
+                        <option value="Trung Bình" <%= practice.MucDoKho === 'Trung Bình' ? 'selected' : '' %>>Trung Bình</option>
+                        <option value="Khó" <%= practice.MucDoKho === 'Khó' ? 'selected' : '' %>>Khó</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="MaChuDe">Chủ đề:</label>
+                    <select id="MaChuDe" name="MaChuDe" required>
+                        <% topics.forEach(function(topic) { %>
+                            <option value="<%= topic.MaChuDe %>" 
+                                <%= practice.MaChuDe === topic.MaChuDe ? 'selected' : '' %>>
+                                <%= topic.TenChuDe %>
+                            </option>
+                        <% }); %>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="DuLieuDauVao">Dữ liệu đầu vào:</label>
+                    <textarea id="DuLieuDauVao" name="DuLieuDauVao" required><%= practice.DuLieuDauVao %></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="DauRaMongDoi">Đầu ra mong đợi:</label>
+                    <textarea id="DauRaMongDoi" name="DauRaMongDoi" required><%= practice.DauRaMongDoi %></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="KieuDuLieu">Kiểu dữ liệu:</label>
+                    <select id="KieuDuLieu" name="KieuDuLieu" required>
+                        <option value="">Chọn kiểu dữ liệu</option>
+                        <option value="number" <%= practice.KieuDuLieu === 'number' ? 'selected' : '' %>>Number</option>
+                        <option value="string" <%= practice.KieuDuLieu === 'string' ? 'selected' : '' %>>String</option>
+                        <option value="boolean" <%= practice.KieuDuLieu === 'boolean' ? 'selected' : '' %>>Boolean</option>
+                        <option value="array" <%= practice.KieuDuLieu === 'array' ? 'selected' : '' %>>Array</option>
+                        <option value="object" <%= practice.KieuDuLieu === 'object' ? 'selected' : '' %>>Object</option>
+                    </select>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-save">Lưu thay đổi</button>
+                    <button type="button" class="btn btn-cancel" onclick="window.location.href='/practice/details/<%= practice.MaBaiTap %>'">Hủy chỉnh sửa</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('editPracticeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            try {
+                const formData = new FormData(e.target);
+                const data = {
+                    TieuDe: formData.get('TieuDe'),
+                    MoTa: formData.get('MoTa'),
+                    MucDoKho: formData.get('MucDoKho'),
+                    MaChuDe: parseInt(formData.get('MaChuDe')),
+                    DuLieuDauVao: formData.get('DuLieuDauVao'),
+                    DauRaMongDoi: formData.get('DauRaMongDoi'),
+                    KieuDuLieu: formData.get('KieuDuLieu')
+                };
+
+
+                // Thêm kiểm tra dữ liệu
+                if (!data.TieuDe.trim()) {
+                    throw new Error('Tiêu đề không được để trống');
+                }
+                if (!data.MoTa.trim()) {
+                    throw new Error('Mô tả không được để trống');
+                }
+                if (!data.MucDoKho) {
+                    throw new Error('Vui lòng chọn độ khó cho bài tập');
+                }
+                if (!data.MaChuDe) {
+                    throw new Error('Vui lòng chọn chủ đề cho bài tập');
+                }
+                if (!data.DuLieuDauVao.trim()) {
+                    throw new Error('Dữ liệu đầu vào không được để trống');
+                }
+                if (!data.DauRaMongDoi.trim()) {
+                    throw new Error('Đầu ra mong đợi không được để trống');
+                }
+
+                const response = await fetch('/practice/edit/<%= practice.MaBaiTap %>', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    alert(result.message);
+                    window.location.href = '/practice/details/<%= practice.MaBaiTap %>';
+                } else {
+                    throw new Error(result.message || 'Có lỗi xảy ra khi cập nhật bài tập');
+                }
+            } catch (error) {
+                console.error('Lỗi:', error);
+                alert(error.message || 'Có lỗi xảy ra khi cập nhật bài tập');
+            }
+        });
+    </script>
+</body>
+</html> 

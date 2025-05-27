@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Xóa các đường dẫn CSS trùng lặp, chỉ giữ lại đường dẫn đúng -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Sen:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" href="/images/img/bg-logo-web.png" type="image/png" />
+    <link rel="stylesheet" href="/css/reset.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/leaderboard.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <title>Xếp Hạng | Code Master</title>
+  </head>
+  <body>
+    <header class="header fixed"><%- include('partials/header') %></header>
+    <main class="leaderboard-main">
+      <div class="main-content">
+        <div class="leaderboard-center">
+          <div class="list-top-3-users">
+            <% if (topUsers && topUsers.length > 0) { %>
+            <!-- Top 2 -->
+            <% if (topUsers[1]) { %>
+            <div class="user-info top2">
+              <img
+                src="/images/img/avatar-default.png"
+                alt=""
+                class="user-avatar"
+              />
+              <p class="user-name"><%= topUsers[1].HoTen %></p>
+              <p class="user-top">Top 2</p>
+              <p class="user-score"><%= topUsers[1].DiemSo %> điểm</p>
+            </div>
+            <% } %>
+
+            <!-- Top 1 -->
+            <div class="user-info top1">
+              <img
+                src="/images/img/avatar-default.png"
+                alt=""
+                class="user-avatar"
+              />
+              <p class="user-name"><%= topUsers[0].HoTen %></p>
+              <p class="user-top">Top 1</p>
+              <p class="user-score"><%= topUsers[0].DiemSo %> điểm</p>
+            </div>
+
+            <!-- Top 3 -->
+            <% if (topUsers[2]) { %>
+            <div class="user-info top3">
+              <img
+                src="/images/img/avatar-default.png"
+                alt=""
+                class="user-avatar"
+              />
+              <p class="user-name"><%= topUsers[2].HoTen %></p>
+              <p class="user-top">Top 3</p>
+              <p class="user-score"><%= topUsers[2].DiemSo %> điểm</p>
+            </div>
+            <% } %> <% } else { %>
+            <p class="no-data">Chưa có dữ liệu xếp hạng</p>
+            <% } %>
+          </div>
+        </div>
+
+        <div class="leaderboard-content">
+          <div class="list-top-more-users">
+            <div class="user-list">
+              <div class="user-item-info">
+                <div class="user-top"><p>Hạng</p></div>
+                <p class="user-name">Tên người dùng</p>
+                <p class="user-score">Điểm số</p>
+              </div>
+
+              <% if (otherUsers && otherUsers.length > 0) { %> <%
+              otherUsers.forEach((user, index) => { %>
+              <div class="user-item">
+                <div class="user-top"><p><%= index + 4 %></p></div>
+                <div class="user-name">
+                  <img src="/images/img/avatar-default.png" alt="" />
+                  <p><%= user.HoTen %></p>
+                </div>
+                <p class="user-score"><%= user.DiemSo %> điểm</p>
+              </div>
+              <% }) %> <% } else { %>
+              <p class="no-data">Không có thêm dữ liệu xếp hạng</p>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

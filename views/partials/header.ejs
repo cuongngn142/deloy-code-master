@@ -1,0 +1,110 @@
+<link rel="stylesheet" href="/css/header.css" />
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+/>
+
+<div class="main-content">
+  <div class="body">
+    <!-- logo -->
+    <a href="/">
+      <img src="/images/img/logo-web.png" alt="logo" id="logo" />
+    </a>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+      <ul>
+        <li class="active"><a href="/">Trang Chủ</a></li>
+        <li><a href="/practice">Luyện Tập</a></li>
+        <li><a href="/leaderboard">Xếp Hạng</a></li>
+        <li><a href="/about">About</a></li>
+      </ul>
+    </nav>
+    <!-- Đăng nhập -->
+    <% if (typeof user !== 'undefined' && user) { %>
+    <div class="user-profile">
+      <button class="profile-btn" id="profileBtn">
+        <div class="avatar-container">
+          <img
+            src="<%= user.Avatar || '/images/img/avatar-default.png' %>"
+            alt="avatar"
+            class="avatar"
+          />
+        </div>
+        <span class="user-name"><%= user.hoTen %></span>
+      </button>
+      <ul class="profile-dropdown" id="profileDropdown">
+        <li>
+          <a href="/profile"><i class="fas fa-user-circle"></i> Hồ sơ</a>
+        </li>
+        <li>
+          <a href="/settings"><i class="fas fa-cog"></i> Cài đặt</a>
+        </li>
+        <li>
+          <a href="#" id="logoutBtn"
+            ><i class="fas fa-sign-out-alt"></i> Đăng xuất</a
+          >
+        </li>
+      </ul>
+    </div>
+    <% } else { %>
+    <button class="open-modal-btn">
+      <i class="fas fa-user"></i>
+      <span>Đăng nhập</span>
+    </button>
+    <% } %>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const navItems = document.querySelectorAll(".navbar ul li a");
+    const normalizePath = (path) => path.replace(/\/+$/, "");
+
+    const currentPath = normalizePath(window.location.pathname);
+
+    navItems.forEach((link) => {
+      const parentLi = link.parentElement;
+      parentLi.classList.remove("active");
+
+      const href = normalizePath(link.getAttribute("href"));
+      if (href === currentPath) {
+        parentLi.classList.add("active");
+      }
+    });
+  });
+
+  const profileBtn = document.getElementById("profileBtn");
+  const profileDropdown = document.getElementById("profileDropdown");
+
+  profileBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    profileDropdown.classList.toggle("active");
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!profileDropdown.contains(e.target) && !profileBtn.contains(e.target)) {
+      profileDropdown.classList.remove("active");
+    }
+  });
+
+  document.getElementById("logoutBtn").addEventListener("click", async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("/logout", {
+        method: "GET",
+        credentials: "same-origin",
+      });
+
+      if (response.ok) {
+        window.location.href = "/";
+      } else {
+        console.error("Logout failed");
+        window.location.href = "/";
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+      window.location.href = "/";
+    }
+  });
+</script>
