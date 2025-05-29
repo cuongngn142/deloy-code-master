@@ -97,7 +97,7 @@
               <div class="practice-buttons">
                 <button
                   class="btn-solve"
-                  onclick="window.location.href='/practice/solve/<%= practice.MaBaiTap %>'"
+                  data-practice-id="<%= practice.MaBaiTap %>"
                 >
                   Giải bài
                 </button>
@@ -161,9 +161,18 @@
 
         // Xử lý nút giải bài
         const solveBtns = document.querySelectorAll(".btn-solve");
+        const profileBtn = document.getElementById("profileBtn");
         solveBtns.forEach((btn) => {
-          btn.addEventListener("click", function () {
-            console.log("Solving practice...");
+          const practiceId = btn.getAttribute("data-practice-id");
+
+          btn.addEventListener("click", (e) => {
+            e.preventDefault();
+
+            if (!profileBtn) {
+              alert("Bạn cần đăng nhập mới có thể giải bài tập");
+            } else {
+              window.location.href = `/practice/solve/${practiceId}`;
+            }
           });
         });
 
@@ -205,7 +214,6 @@
         </form>
       </div>
     </div>
-    <script src="./controllers/addsubjectController.js"></script>
   </body>
 </html>
 
@@ -215,9 +223,11 @@
   const addTopicForm = document.getElementById("addTopicForm");
 
   // Mở modal khi click nút thêm chủ đề
-  addTopicBtn.addEventListener("click", function () {
-    addTopicModal.style.display = "flex";
-  });
+  if (addTopicBtn) {
+    addTopicBtn.addEventListener("click", function () {
+      addTopicModal.style.display = "flex";
+    });
+  }
 
   // Đóng modal khi ấn nút hủy
   function closeTopicModal() {

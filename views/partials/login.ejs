@@ -14,110 +14,92 @@
         <input type="email" name="email" placeholder="Email" required />
         <input type="password" name="matKhau" placeholder="Mật khẩu" required />
         <div class="remember-me">
-          <input type="checkbox" id="rememberMe" />
+          <input type="checkbox" id="rememberMe" required />
           <label for="rememberMe">Ghi Nhớ Tôi</label>
         </div>
-        <!-- Add loading spinner CSS -->
-        <style>
-        .loading-spinner {
-            display: none;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid #2196F3;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-left: 10px;
-        }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .btn-with-spinner {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        </style>
-        
         <!-- Modify login form button -->
         <form id="login">
-            <button type="submit" class="btn btn-primary btn-with-spinner">
-                <span>Đăng nhập</span>
-                <div class="loading-spinner"></div>
-            </button>
+          <button type="submit" class="btn btn-primary btn-with-spinner">
+            <span>Đăng nhập</span>
+            <div class="loading-spinner"></div>
+          </button>
         </form>
 
-        
         <script>
-        // Xử lý đăng ký
-document.getElementById('register').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  
-  try {
-      const formData = new FormData(e.target);
-      const data = {
-          email: formData.get('email'),
-          matKhau: formData.get('matKhau'),
-          hoTen: formData.get('hoTen')
-      };
+          //xử lý đăng ký
+          const register = document.getElementById("register");
+          if (register) {
+            register.addEventListener("submit", async (e) => {
+              e.preventDefault();
 
-      const response = await fetch('/auth/register', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-      });
+              try {
+                const formData = new FormData(e.target);
+                const data = {
+                  email: formData.get("email"),
+                  matKhau: formData.get("matKhau"),
+                  hoTen: formData.get("hoTen"),
+                };
 
-      const result = await response.json();
-      
-      if (result.success) {
-          alert('Đăng ký thành công!');
-          window.location.reload();
-      } else {
-          alert(result.message);
-      }
-  } catch (error) {
-      console.error('Lỗi:', error);
-      alert('Có lỗi xảy ra, vui lòng thử lại sau');
-  }
-});
+                const response = await fetch("/auth/register", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(data),
+                });
 
-// Xử lý đăng nhập
-document.getElementById('login').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  
-  try {
-      const formData = new FormData(e.target);
-      const data = {
-          email: formData.get('email'),
-          matKhau: formData.get('matKhau')
-      };
+                const result = await response.json();
 
-      const response = await fetch('/auth/login', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-      });
+                if (result.success) {
+                  alert("Đăng ký thành công!");
+                  window.location.reload();
+                } else {
+                  alert(result.message);
+                }
+              } catch (error) {
+                console.error("Lỗi:", error);
+                alert("Có lỗi xảy ra, vui lòng thử lại sau");
+              }
+            });
+          }
 
-      const result = await response.json();
-      
-      if (result.success) {
-          window.location.reload();
-      } else {
-          alert(result.message);
-      }
-  } catch (error) {
-      console.error('Lỗi:', error);
-      alert('Có lỗi xảy ra, vui lòng thử lại sau');
-  }
-});
+          // Xử lý đăng nhập
+          const login = document.getElementById("login");
+          if (login) {
+            login.addEventListener("submit", async (e) => {
+              e.preventDefault();
+
+              try {
+                const formData = new FormData(e.target);
+                const data = {
+                  email: formData.get("email"),
+                  matKhau: formData.get("matKhau"),
+                };
+
+                const response = await fetch("/auth/login", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(data),
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                  window.location.reload();
+                } else {
+                  alert(result.message);
+                }
+              } catch (error) {
+                console.error("Lỗi:", error);
+                alert("Có lỗi xảy ra, vui lòng thử lại sau");
+              }
+            });
+          }
         </script>
+
         <div class="forgot-password">
           <a href="#!">Quên Mật Khẩu?</a>
         </div>
@@ -132,7 +114,12 @@ document.getElementById('login').addEventListener('submit', async (e) => {
         <input type="text" name="hoTen" placeholder="Họ tên" required />
         <input type="email" name="email" placeholder="Email" required />
         <input type="password" name="matKhau" placeholder="Mật khẩu" required />
-        <input type="password" name="xacNhanMatKhau" placeholder="Xác nhận mật khẩu" required />
+        <input
+          type="password"
+          name="xacNhanMatKhau"
+          placeholder="Xác nhận mật khẩu"
+          required
+        />
         <select name="VaiTro" required>
           <option value="User">User</option>
           <option value="Admin">Admin</option>
@@ -193,79 +180,85 @@ document.getElementById('login').addEventListener('submit', async (e) => {
   });
 
   // Xử lý đăng nhập
-  document.querySelector('#login form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = e.target.querySelector('input[name="email"]').value;  // Sửa selector
-    const matKhau = e.target.querySelector('input[name="matKhau"]').value;  // Sửa selector
-  
-    if (!validateEmail(email)) {
-      showError('Email không hợp lệ');
-      return;
-    }
-  
-    try {
-      const res = await fetch('/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email, matKhau })
-      });
-  
-      const data = await res.json();
-      alert(data.message);
-      if (data.success) {
-        window.location.reload();
+  document
+    .querySelector("#login form")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = e.target.querySelector('input[name="email"]').value; // Sửa selector
+      const matKhau = e.target.querySelector('input[name="matKhau"]').value; // Sửa selector
+
+      if (!validateEmail(email)) {
+        showError("Email không hợp lệ");
+        return;
       }
-    } catch (error) {
-      showError('Có lỗi xảy ra, vui lòng thử lại sau');
-    }
-  });
+
+      try {
+        const res = await fetch("/auth/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, matKhau }),
+        });
+
+        const data = await res.json();
+        alert(data.message);
+        if (data.success) {
+          window.location.reload();
+        }
+      } catch (error) {
+        showError("Có lỗi xảy ra, vui lòng thử lại sau");
+      }
+    });
 
   // Xử lý đăng ký
-  document.querySelector('#register form').addEventListener('submit', async (e) => {
+  document
+    .querySelector("#register form")
+    .addEventListener("submit", async (e) => {
       e.preventDefault();
       const hoTen = e.target.querySelector('input[name="hoTen"]').value;
       const email = e.target.querySelector('input[name="email"]').value;
       const matKhau = e.target.querySelector('input[name="matKhau"]').value;
-      const xacNhanMatKhau = e.target.querySelector('input[name="xacNhanMatKhau"]').value;
-      const dieuKhoan = e.target.querySelector('#terms').checked;
+      const xacNhanMatKhau = e.target.querySelector(
+        'input[name="xacNhanMatKhau"]'
+      ).value;
+      const dieuKhoan = e.target.querySelector("#terms").checked;
       const vaiTro = e.target.querySelector('select[name="VaiTro"]').value;
-  
+
       // Kiểm tra dữ liệu
       if (!validateEmail(email)) {
-          showError('Email không hợp lệ');
-          return;
+        showError("Email không hợp lệ");
+        return;
       }
-  
+
       if (matKhau !== xacNhanMatKhau) {
-          showError('Mật khẩu xác nhận không khớp');
-          return;
+        showError("Mật khẩu xác nhận không khớp");
+        return;
       }
-  
+
       if (!dieuKhoan) {
-          showError('Vui lòng đồng ý với điều khoản');
-          return;
+        showError("Vui lòng đồng ý với điều khoản");
+        return;
       }
-  
+
       try {
-          const res = await fetch('/auth/register', {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ hoTen, email, matKhau, vaiTro })
-          });
-  
-          const data = await res.json();
-          if (data.success) {
-              alert('Đăng ký thành công!');
-              showTab('login');
-          } else {
-              showError(data.message || 'Đăng ký thất bại');
-          }
+        const res = await fetch("/auth/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ hoTen, email, matKhau, vaiTro }),
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          alert("Đăng ký thành công!");
+          showTab("login");
+        } else {
+          showError(data.message || "Đăng ký thất bại");
+        }
       } catch (error) {
-          showError('Có lỗi xảy ra, vui lòng thử lại sau');
+        showError("Có lỗi xảy ra, vui lòng thử lại sau");
       }
-  });
+    });
 </script>
