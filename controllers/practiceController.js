@@ -79,7 +79,7 @@ class PracticeController {
         !MaChuDe ||
         !DuLieuDauVao ||
         !DauRaMongDoi ||
-        !KieuDuLieu
+        KieuDuLieu
       ) {
         return res.status(400).json({
           success: false,
