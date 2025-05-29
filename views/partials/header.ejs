@@ -40,6 +40,12 @@
         <li>
           <a href="/settings"><i class="fas fa-cog"></i> Cài đặt</a>
         </li>
+        <% if (user && user.vaiTro && user.vaiTro.trim() ===
+        'Admin') { %>
+        <li>
+          <a href="/dashboard"><i class="fas fa-user"></i> Dashboard</a>
+        </li>
+        <% } %>
         <li>
           <a href="#" id="logoutBtn"
             ><i class="fas fa-sign-out-alt"></i> Đăng xuất</a
@@ -93,31 +99,27 @@
     });
   }
 
+  const logoutBtn = document.getElementById("logoutBtn");
 
-
-  const logoutBtn = document.getElementById("logoutBtn")
-  
-  if(logoutBtn){
+  if (logoutBtn) {
     logoutBtn.addEventListener("click", async (e) => {
-    e.preventDefault();
-    try {
-      const response = await fetch("/logout", {
-        method: "GET",
-        credentials: "same-origin",
-      });
+      e.preventDefault();
+      try {
+        const response = await fetch("/logout", {
+          method: "GET",
+          credentials: "same-origin",
+        });
 
-      if (response.ok) {
-        window.location.href = "/";
-      } else {
-        console.error("Logout failed");
+        if (response.ok) {
+          window.location.href = "/";
+        } else {
+          console.error("Logout failed");
+          window.location.href = "/";
+        }
+      } catch (error) {
+        console.error("Logout error:", error);
         window.location.href = "/";
       }
-    } catch (error) {
-      console.error("Logout error:", error);
-      window.location.href = "/";
-    }
-  });
+    });
   }
-  
-  
 </script>

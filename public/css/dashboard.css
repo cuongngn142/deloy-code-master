@@ -1,0 +1,264 @@
+body {
+  background-color: #f4f4f4;
+}
+
+h2 {
+  user-select: none;
+}
+
+li {
+  list-style: none;
+}
+
+.card.languageChart {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 600px;
+  margin-bottom: 20px;
+}
+
+.card.exerciseByTopicChart {
+  width: 1000px;
+  height: 800px;
+}
+
+.main-content .dashboard h1 {
+  text-align: center;
+  font-weight: 700;
+  font-size: 32px;
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+
+.stats {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+  padding-bottom: 20px;
+}
+
+.card {
+  flex-basis: 376px;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+.stats .card h2 {
+  font-size: 25px;
+  font-weight: 600;
+  margin: 20px;
+  text-align: center;
+}
+.stats .card p {
+  text-align: center;
+  margin: 16px 0;
+  font-weight: 600;
+  font-size: 20px;
+}
+
+.card.languageChart h2 {
+  margin: 20px;
+  font-weight: 700;
+  font-size: 28px;
+  padding-top: 30px;
+}
+
+.card.exerciseByTopicChart h2 {
+  margin: 20px;
+  font-weight: 700;
+  font-size: 28px;
+  padding-top: 30px;
+}
+
+.card.exerciseByTopicChart {
+  width: 100%;
+  height: 700p x;
+  margin-bottom: 20px;
+}
+
+.card.user-container h2 {
+  margin: 20px;
+  font-weight: 700;
+  font-size: 28px;
+  padding-top: 30px;
+}
+
+.card.user-container .user-list {
+  display: flex;
+  justify-content: space-between;
+  background-color: #007bff;
+  color: white;
+  padding: 10px;
+  font-weight: 600;
+}
+
+.card.user-container .user-list span {
+  width: 185px;
+  flex-shrink: 0;
+  border-radius: 8px;
+}
+
+.card.user-container .user-list .col-role {
+  width: 100px;
+}
+
+.card.user-container .user-list .col-id {
+  width: 100px;
+}
+
+.card.user-container .user-list .col-name {
+  width: 130px;
+}
+
+.user-content .user-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+}
+
+.user-content .user-item p {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 185px;
+  flex-shrink: 0;
+  display: flex;
+}
+
+.user-content .user-item .user-role {
+  width: 100px;
+}
+
+.user-content .user-item .user-id {
+  width: 100px;
+}
+
+.user-content .user-item .user-name {
+  width: 130px;
+}
+
+.user-content .user-item .btn-group button {
+  color: #fff;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 10px 20px;
+  transition: background-color 0.5s ease;
+}
+
+.user-content .user-item .btn-edit {
+  background-color: #007bff;
+}
+
+.user-content .user-item .btn-edit:hover {
+  background-color: #5facff;
+}
+
+.user-content .user-item .btn-delete {
+  background-color: #ff0000;
+}
+
+.user-content .user-item .btn-delete:hover {
+  background-color: #ff6969;
+}
+
+/* modal edit user*/
+.modal-edit-user {
+  display: none;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 500px;
+  background-color: #fff;
+  flex-direction: column;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  border: 1px solid #4f4f4f;
+  z-index: 888;
+}
+
+.modal-edit-user.active {
+  display: flex;
+}
+
+.modal-edit-user h2 {
+  text-align: center;
+  color: #5facff;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.modal-edit-user input {
+  width: 50%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #747474;
+}
+
+.modal-edit-user .btn-group {
+  width: 50%;
+  display: flex;
+  gap: 15px;
+}
+
+.modal-edit-user .btn-group input {
+  color: #fff;
+  font-weight: 600;
+  font-size: 18px;
+  background-color: rgb(77, 150, 255);
+  border: none;
+  border-radius: 8px;
+  transition: background-color 0.5s ease;
+  cursor: pointer;
+}
+
+.modal-edit-user .btn-group input:hover {
+  background-color: rgb(122, 173, 245);
+}
+
+.modal-edit-user .cancel-edit {
+  color: #fff;
+  font-weight: 600;
+  font-size: 18px;
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  background-color: #8b9197;
+  transition: background-color 0.5s ease;
+  cursor: pointer;
+}
+
+.modal-edit-user .cancel-edit:hover {
+  background-color: #babec1;
+}
+
+#userRole {
+  width: 50%;
+  padding: 10px;
+  border: 1px solid  #494949;
+}
+
+.modal-overlay {
+  position: fixed;     
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.6); 
+  z-index: 887;         
+  display: none;        
+}
+
+.modal-overlay.active {
+  display: block;
+}

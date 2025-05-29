@@ -152,10 +152,12 @@
   }
 
   // Mở modal
-  openModalBtn.onclick = () => {
-    modal.classList.add("show");
-    showTab("login");
-  };
+  if (openModalBtn) {
+    openModalBtn.onclick = () => {
+      modal.classList.add("show");
+      showTab("login");
+    };
+  }
 
   window.onclick = (e) => {
     if (e.target === modal) {

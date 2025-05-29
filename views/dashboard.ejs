@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./css/reset.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Sen:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" href="./images/img/bg-logo-web.png" type="image/png" />
+    <meta
+      name="description"
+      content="Học lập trình hãy xem nó như là trò chơi, vì nó có thể học bất cứ lúc nào."
+    />
+    <meta
+      name="keywords"
+      content="codemaster, Code Master, học code, luyện code"
+    />
+    <link rel="stylesheet" href="./css/style.css" />
+    <link rel="stylesheet" href="./css/dashboard.css" />
+    <title>Dashboard | Code Master</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <header class="header fixed"><%- include('partials/header') %></header>
+
+    <div class="main-content">
+      <div class="dashboard">
+        <h1>Dashboard Code Master</h1>
+
+        <div class="stats">
+          <div class="card">
+            <h2>Tổng Số Người Dùng</h2>
+            <p id="totalUsers">Đang tải...</p>
+          </div>
+          <div class="card">
+            <h2>Tổng Số Bài Tập</h2>
+            <p id="totalExercises">Đang tải...</p>
+          </div>
+          <div class="card">
+            <h2>Tổng Số Bài Nộp</h2>
+            <p id="totalSubmissions">Đang tải...</p>
+          </div>
+        </div>
+
+        <div class="card languageChart">
+          <h2>Số lượng bài tập theo ngôn ngữ</h2>
+          <canvas id="languageChart" width="100" height="200"></canvas>
+        </div>
+        <div class="card exerciseByTopicChart">
+          <h2>Số lượng bài tập theo chủ đề</h2>
+          <canvas id="exerciseByTopicChart"></canvas>
+        </div>
+
+        <div class="card user-container">
+          <h2>Danh Sách Người Dùng</h2>
+          <div class="user-list">
+            <span class="col-id">Id</span>
+            <span class="col-name">Họ Tên</span>
+            <span>Email</span>
+            <span class="col-role">Vai Trò</span>
+            <span>Ngày Tạo</span>
+            <span>Thao Tác</span>
+          </div>
+          <div class="user-content"></div>
+        </div>
+
+        <div class="modal-overlay"></div>
+        <div class="modal-edit-user">
+          <h2>Chỉnh sửa người dùng</h2>
+          <input id="userName" type="text" placeholder="Tên người dùng" />
+          <input id="userEmail" type="text" placeholder="Email" />
+          <select id="userRole">
+            <option value="Admin">Admin</option>
+            <option value="User">User</option>
+          </select>
+          <input
+            id="userCreatedAt"
+            type="datetime-local"
+            placeholder="Ngày tạo tài khoản"
+          />
+          <div class="btn-group">
+            <input id="saveChangesBtn" type="submit" value="Lưu thay đổi" />
+            <button class="cancel-edit">Hủy thay đổi</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer><%- include('partials/footer') %></footer>
+
+    <script>
+      const URL_API = "http://localhost:3000";
+      async function fetchData(url) {
+        try {
+          const response = await fetch(url);
+          return await response.json();
+        } catch (error) {
+          console.error("Error fetching data:", error);
+          return null;
+        }
+      }
+
+      async function loadOverviewStats() {
+        const totalUsers = await fetchData(`${URL_API}/api/dashboard/users`);
+        const totalExercises = await fetchData(
+          `${URL_API}/api/exercise/quantity`
+        ); //tổng số bài tập
+        const totalSubmissions = await fetchData(
+          `${URL_API}/api/results/quantity`
+        ); //tổng số bài nộp
+
+        document.getElementById("totalUsers").textContent =
+          totalUsers.length < 10 ? "0" + totalUsers.length : totalUsers.length;
+        document.getElementById("totalExercises").textContent =
+          totalExercises.practiceQuantity < 10
+            ? "0" + totalExercises.practiceQuantity
+            : totalExercises.practiceQuantity;
+        document.getElementById("totalSubmissions").textContent =
+          totalSubmissions.SubmissionResultQuantity < 10
+            ? "0" + totalSubmissions.SubmissionResultQuantity
+            : totalSubmissions.SubmissionResultQuantity;
+      }
+
+      async function loadLanguageChart() {
+        const data = await fetchData(
+          `${URL_API}/api/results/programming-languages/quantity`
+        );
+        if (data) {
+          const labels = data.map((dt) => dt.TenNgonNgu);
+          const count = data.map((dt) => dt.quantitySubmissionExercises);
+
+          new Chart(document.getElementById("languageChart"), {
+            type: "pie",
+            data: {
+              labels: labels,
+              datasets: [
+                {
+                  data: count,
+                  backgroundColor: ["#007bff", "#28a745", "#dc3545"],
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+            },
+          });
+        }
+      }
+
+      // Biểu đồ bài tập theo chủ đề
+      async function loadExerciseByTopicChart() {
+        const data = await fetchData(
+          "http://localhost:3000/api/topics/exercise-counts"
+        );
+        if (data) {
+          const labels = data.map((item) => item.TenChuDe);
+          const counts = data.map((item) => item.quantityExercises);
+
+          new Chart(document.getElementById("exerciseByTopicChart"), {
+            type: "bar",
+            data: {
+              labels: labels,
+              datasets: [
+                {
+                  label: "Số Bài Tập",
+                  data: counts,
+                  backgroundColor: "#007bff",
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              scales: {
+                y: {
+                  beginAtZero: true,
+                },
+              },
+            },
+          });
+        }
+      }
+
+      async function loadListUser() {
+        const listUser = await fetchData(`${URL_API}/api/dashboard/users`);
+        if (listUser) {
+          listUser.forEach((user) => {
+            const idFormat =
+              user.MaNguoiDung < 10 ? "0" + user.MaNguoiDung : user.MaNguoiDung;
+            const div = document.createElement("div");
+            div.classList.add("user-item");
+
+            div.innerHTML = `
+                  <p class="user-id">${idFormat}</p>
+                  <p class="user-name">${user.HoTen}</p>
+                  <p class="user-email">${user.Email}</p>
+                  <p class="user-role">${user.VaiTro}</p>
+                  <p class="user-createdAt">${user.NgayTao}</p>
+                  <div class="btn-group">
+                  <button class="btn-edit">Edit</button>
+                  <button class="btn-delete">Delete</button>
+                  </div>
+                  `;
+
+            const content = document.querySelector(".user-content");
+            if (content) {
+              content.appendChild(div);
+            }
+          });
+          renderDataUpInputFormEdit();
+          deleteUser();
+        }
+      }
+
+      //do user-item  đc tạo ở trên loadListUser nên gọi hàm bên ngoài
+      //thì listUser chưa render xog userItem ko tồn tại gây lỗi
+      // nên phải gọi trong listUser để đợi listUser render xog
+      function renderDataUpInputFormEdit() {
+        const userItem = document.querySelectorAll(".user-item");
+        const overlay = document.querySelector(".modal-overlay");
+        if (userItem) {
+          userItem.forEach((item, index) => {
+            item.addEventListener("click", (e) => {
+              const btn = e.target.closest(".btn-edit");
+              const userId = item.querySelector(".user-id").textContent;
+              localStorage.setItem("targetUserId", userId);
+              const userName = item.querySelector(".user-name").textContent;
+              const userEmail = item.querySelector(".user-email").textContent;
+              const userRole = item.querySelector(".user-role").textContent;
+              const userCreatedAt =
+                item.querySelector(".user-createdAt").textContent;
+              if (btn) {
+                const modal = document.querySelector(".modal-edit-user");
+                if (modal) {
+                  modal.classList.add("active");
+                  document.body.style.overflow = "hidden"; //ngăn scroll khi mở modal
+                  overlay.classList.add("active");
+                  document.getElementById("userName").value = userName;
+                  document.getElementById("userEmail").value = userEmail;
+                  document.getElementById("userRole").value = userRole;
+                  document.getElementById("userCreatedAt").value =
+                    userCreatedAt;
+                } else {
+                }
+              }
+            });
+          });
+        }
+      }
+
+      //tắt modal
+      const modal = document.querySelector(".modal-edit-user");
+      const overlay = document.querySelector(".modal-overlay");
+
+      document.addEventListener("click", (e) => {
+        if (!modal) return;
+
+        if (modal.classList.contains("active")) {
+          if (
+            (!e.target.closest(".modal-edit-user") &&
+              !e.target.closest(".btn-edit")) ||
+            e.target.closest(".cancel-edit")
+          ) {
+            modal.classList.remove("active");
+            overlay.classList.remove("active");
+            document.body.style.overflow = "";
+            localStorage.removeItem("targetUserId");
+          }
+        }
+      });
+
+      async function updateUser() {
+        document
+          .getElementById("saveChangesBtn")
+          .addEventListener("click", async function () {
+            const id = localStorage.getItem("targetUserId");
+            const name = document.getElementById("userName").value;
+            const email = document.getElementById("userEmail").value;
+            const role = document.getElementById("userRole").value;
+            const createdAt = document.getElementById("userCreatedAt").value;
+
+            const response = await fetch(
+              `${URL_API}/api/dashboard/users/${id}`,
+              {
+                method: "PATCH",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  HoTen: name,
+                  Email: email,
+                  VaiTro: role,
+                  NgayTao: createdAt,
+                }),
+              }
+            );
+            const data = await response.json();
+            alert("Cập nhật thành công");
+            window.location.href = "/dashboard";
+            localStorage.removeItem("targetUserId");
+          });
+      }
+
+      async function deleteUser() {
+        const btnDelete = document.querySelectorAll(".btn-delete");
+        if (btnDelete) {
+          btnDelete.forEach((btn) => {
+            btn.addEventListener("click", async function () {
+              // const item = btn.parentElement.parentElement; trả về userItem
+              const item = btn.closest(".user-item"); //cũng trả về userItem
+              const useridTarget = item.querySelector(".user-id").textContent;
+              const response = await fetch(
+                `${URL_API}/api/dashboard/users/${useridTarget}`,
+                {
+                  method: "DELETE",
+                }
+              );
+              const rs = await response.json();
+              if (rs.success) {
+                alert(rs.message);
+                item.remove();
+              } else if (rs.success === false) {
+                alert(rs.message);
+              }
+            });
+          });
+        }
+      }
+
+      // function isAdmin() {
+      //   const userRole = "<%= user.vaiTro %>";
+      //   if (userRole === "Admin") {
+      //     const deleteButtons = document.querySelectorAll(".btn-delete");
+      //     deleteButtons.forEach((btn) => {
+      //       btn.disabled = true; 
+      //       btn.style.cursor = "not-allowed"; 
+      //       btn.title = "Không thể thao tác";
+      //     });
+      //   }
+      // }
+
+      loadListUser();
+      loadOverviewStats();
+      loadLanguageChart();
+      loadExerciseByTopicChart();
+      updateUser();
+      // isAdmin();
+    </script>
+  </body>
+</html>
