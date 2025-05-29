@@ -90,7 +90,6 @@
     <footer><%- include('partials/footer') %></footer>
 
     <script>
-      const URL_API = "http://localhost:3000";
       async function fetchData(url) {
         try {
           const response = await fetch(url);
@@ -102,13 +101,9 @@
       }
 
       async function loadOverviewStats() {
-        const totalUsers = await fetchData(`${URL_API}/api/dashboard/users`);
-        const totalExercises = await fetchData(
-          `${URL_API}/api/exercise/quantity`
-        ); //tổng số bài tập
-        const totalSubmissions = await fetchData(
-          `${URL_API}/api/results/quantity`
-        ); //tổng số bài nộp
+        const totalUsers = await fetchData(`/api/dashboard/users`);
+        const totalExercises = await fetchData(`/api/exercise/quantity`); //tổng số bài tập
+        const totalSubmissions = await fetchData(`/api/results/quantity`); //tổng số bài nộp
 
         document.getElementById("totalUsers").textContent =
           totalUsers.length < 10 ? "0" + totalUsers.length : totalUsers.length;
@@ -123,8 +118,9 @@
       }
 
       async function loadLanguageChart() {
+        //sài url tương đối để deloy
         const data = await fetchData(
-          `${URL_API}/api/results/programming-languages/quantity`
+          `/api/results/programming-languages/quantity`
         );
         if (data) {
           const labels = data.map((dt) => dt.TenNgonNgu);
@@ -150,9 +146,7 @@
 
       // Biểu đồ bài tập theo chủ đề
       async function loadExerciseByTopicChart() {
-        const data = await fetchData(
-          "http://localhost:3000/api/topics/exercise-counts"
-        );
+        const data = await fetchData("/api/topics/exercise-counts");
         if (data) {
           const labels = data.map((item) => item.TenChuDe);
           const counts = data.map((item) => item.quantityExercises);
@@ -182,7 +176,7 @@
       }
 
       async function loadListUser() {
-        const listUser = await fetchData(`${URL_API}/api/dashboard/users`);
+        const listUser = await fetchData(`/api/dashboard/users`);
         if (listUser) {
           listUser.forEach((user) => {
             const idFormat =
@@ -279,21 +273,18 @@
             const role = document.getElementById("userRole").value;
             const createdAt = document.getElementById("userCreatedAt").value;
 
-            const response = await fetch(
-              `${URL_API}/api/dashboard/users/${id}`,
-              {
-                method: "PATCH",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  HoTen: name,
-                  Email: email,
-                  VaiTro: role,
-                  NgayTao: createdAt,
-                }),
-              }
-            );
+            const response = await fetch(`/api/dashboard/users/${id}`, {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                HoTen: name,
+                Email: email,
+                VaiTro: role,
+                NgayTao: createdAt,
+              }),
+            });
             const data = await response.json();
             alert("Cập nhật thành công");
             window.location.href = "/dashboard";
@@ -310,7 +301,7 @@
               const item = btn.closest(".user-item"); //cũng trả về userItem
               const useridTarget = item.querySelector(".user-id").textContent;
               const response = await fetch(
-                `${URL_API}/api/dashboard/users/${useridTarget}`,
+                `/api/dashboard/users/${useridTarget}`,
                 {
                   method: "DELETE",
                 }
@@ -332,8 +323,8 @@
       //   if (userRole === "Admin") {
       //     const deleteButtons = document.querySelectorAll(".btn-delete");
       //     deleteButtons.forEach((btn) => {
-      //       btn.disabled = true; 
-      //       btn.style.cursor = "not-allowed"; 
+      //       btn.disabled = true;
+      //       btn.style.cursor = "not-allowed";
       //       btn.title = "Không thể thao tác";
       //     });
       //   }
