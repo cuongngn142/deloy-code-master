@@ -125,7 +125,7 @@
                 
                 if (response.ok) {
                     alert(result.message);
-                    window.location.href = '/practice/details/<%= practice.MaBaiTap %>';
+                    window.location.href = '/practice';
                 } else {
                     throw new Error(result.message || 'Có lỗi xảy ra khi cập nhật bài tập');
                 }
