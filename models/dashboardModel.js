@@ -88,7 +88,7 @@ const deleteUserById = (id) => {
     const query = `DELETE FROM NguoiDung Where MaNguoiDung = ?`;
     //db.run chạy lệnh ko trả về dữ liệu
     //dùng function thường ms this. đc
-    db.run(query, [id], function(err) {
+    db.run(query, [id], function (err) {
       if (err) {
         reject({
           success: false,
@@ -140,3 +140,5 @@ module.exports = {
   deleteUserById,
   updateUserById,
 };
+
+//aa
