@@ -273,6 +273,13 @@
             const role = document.getElementById("userRole").value;
             const createdAt = document.getElementById("userCreatedAt").value;
 
+            if (role === "Admin") {
+              alert(
+                "Không thể chỉnh sửa thông tin người dùng cùng cấp vai trò!"
+              );
+              return;
+            }
+
             const response = await fetch(`/api/dashboard/users/${id}`, {
               method: "PATCH",
               headers: {
@@ -299,6 +306,14 @@
             btn.addEventListener("click", async function () {
               // const item = btn.parentElement.parentElement; trả về userItem
               const item = btn.closest(".user-item"); //cũng trả về userItem
+              const userRoleTarget =
+                item.querySelector(".user-role").textContent;
+              if (userRoleTarget === "Admin") {
+                alert(
+                  "Không thể chỉnh xóa người dùng cùng cấp vai trò!"
+                );
+                return;
+              }
               const useridTarget = item.querySelector(".user-id").textContent;
               const response = await fetch(
                 `/api/dashboard/users/${useridTarget}`,
@@ -317,18 +332,6 @@
           });
         }
       }
-
-      // function isAdmin() {
-      //   const userRole = "<%= user.vaiTro %>";
-      //   if (userRole === "Admin") {
-      //     const deleteButtons = document.querySelectorAll(".btn-delete");
-      //     deleteButtons.forEach((btn) => {
-      //       btn.disabled = true;
-      //       btn.style.cursor = "not-allowed";
-      //       btn.title = "Không thể thao tác";
-      //     });
-      //   }
-      // }
 
       loadListUser();
       loadOverviewStats();
