@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- reset css -->
+    <link rel="stylesheet" href="/css/reset.css" />
+    <!-- embed fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Sen:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" href="/images/img/logo-web.png" type="image/png" />
+
+    <link rel="stylesheet" href="/css/reset.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/practice.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <title>Học Tập | Code Master</title>
+  </head>
+<body>
+    <header class="header fixed"><%- include('partials/header') %></header>
+    
+    <main class="practice-main">
+      <!-- Phần filter và tìm kiếm -->
+      <div class="main-content">
+        <div class="practice-filter">
+          <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Tìm kiếm bài học..." />
+            <i class="fas fa-search"></i>
+          </div>
+          <div class="filter-options">
+            <select class="language-filter" id="languageFilter">
+              <option value="">Ngôn Ngữ</option>
+              <option value="JavaScript">JavaScript</option>
+              <option value="Python">Python</option>
+              <option value="Java">Java</option>
+              <option value="C++">C++</option>
+              <option value="C#">C#</option>
+              <option value="PHP">PHP</option>
+              <option value="Ruby">Ruby</option>
+              <option value="Swift">Swift</option>
+              <option value="Kotlin">Kotlin</option>
+              <option value="Go">Go</option>
+              <option value="Rust">Rust</option>
+              <option value="TypeScript">TypeScript</option>
+            </select>
+            <% if (user && user.vaiTro && user.vaiTro.trim() === 'Admin') { %>
+            <button class="btn-add-practice" onclick="window.location.href='/learning/add'">
+              <i class="fas fa-plus"></i>
+              Thêm Bài Học
+            </button>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Phần hiển thị danh sách bài học -->
+        <div class="practice-list">
+          <% if (typeof lessons !== 'undefined' && lessons.length > 0) { %>
+          <% lessons.forEach(function(lesson) { %>
+          <div
+            class="practice-item"
+            data-language="<%= lesson.NgonNguLapTrinh || '' %>"
+          >
+            <div class="practice-info">
+              <div class="practice-meta">
+                <% if (lesson.NgonNguLapTrinh) { %>
+                <div class="lesson-language"><%= lesson.NgonNguLapTrinh %></div>
+                <% } %>
+                <h3 class="practice-title"><%= lesson.TieuDe %></h3>
+                <p class="practice-description"><%= lesson.MoTa || 'Không có mô tả' %></p>
+                <div class="lesson-meta">
+                  <span><i class="far fa-calendar-alt"></i> <%= new Date(lesson.NgayCapNhat).toLocaleDateString('vi-VN') %></span>
+                  <span><i class="far fa-user"></i> <%= lesson.TenNguoiTao || 'Admin' %></span>
+                </div>
+              </div>
+              <div class="practice-buttons">
+                <button
+                  class="btn-solve"
+                  onclick="window.location.href='/learning/<%= lesson.MaBaiHoc %>'"
+                >
+                  Xem bài học
+                </button>
+                <% if (user && user.vaiTro && user.vaiTro.trim() === 'Admin') { %>
+                <button
+                  class="btn-details"
+                  onclick="window.location.href='/learning/<%= lesson.MaBaiHoc %>/edit'"
+                >
+                  Chỉnh sửa
+                </button>
+                <% } %>
+              </div>
+            </div>
+          </div>
+          <% }); %>
+          <% } else { %>
+          <div class="no-items">
+            <p>Chưa có bài học nào. Hãy quay lại sau!</p>
+          </div>
+          <% } %>
+        </div>
+      </div>
+    </main>
+    
+    <!-- footer -->
+    <footer><%- include('partials/footer') %></footer>
+    
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("searchInput");
+        const languageFilter = document.getElementById("languageFilter");
+        const lessonItems = document.querySelectorAll(".practice-item");
+
+        function applyFilters() {
+          const searchTerm = searchInput.value.toLowerCase().trim();
+          const selectedLanguage = languageFilter.value;
+
+          lessonItems.forEach((item) => {
+            const title = item
+              .querySelector(".practice-title")
+              .textContent.toLowerCase();
+            const description = item
+              .querySelector(".practice-description")
+              .textContent.toLowerCase();
+            const itemLanguage = item.getAttribute("data-language");
+
+            const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm);
+            const matchesLanguage = !selectedLanguage || itemLanguage === selectedLanguage;
+
+            if (matchesSearch && matchesLanguage) {
+              item.style.display = "block";
+            } else {
+              item.style.display = "none";
+            }
+          });
+        }
+
+        searchInput.addEventListener("input", applyFilters);
+        languageFilter.addEventListener("change", applyFilters);
+      });
+    </script>
+  </body>
+</html>

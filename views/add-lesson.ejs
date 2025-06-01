@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- reset css -->
+    <link rel="stylesheet" href="/css/reset.css" />
+    <!-- embed fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Sen:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" href="/images/img/logo-web.png" type="image/png" />
+
+    <link rel="stylesheet" href="/css/reset.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/practice.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <title>Thêm Bài Học | Code Master</title>
+  </head>
+<body>
+   <header class="header fixed"><%- include('partials/header') %></header>
+    <main class="practice-main">
+      <div class="main-content">
+        <div class="practice-form-container">
+            <h1 class="form-title">Thêm Bài Học Mới</h1>
+            
+            <form action="/learning/add" method="POST" enctype="multipart/form-data" class="practice-form">
+                <div class="form-group">
+                    <label for="tieuDe"><i class="fas fa-heading"></i> Tiêu đề bài học *</label>
+                    <input type="text" id="tieuDe" name="tieuDe" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="moTa"><i class="fas fa-align-left"></i> Mô tả</label>
+                    <textarea id="moTa" name="moTa" rows="4"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="ngonNguLapTrinh"><i class="fas fa-code"></i> Ngôn ngữ lập trình</label>
+                    <select id="ngonNguLapTrinh" name="ngonNguLapTrinh">
+                        <option value="">-- Chọn ngôn ngữ --</option>
+                        <option value="JavaScript">JavaScript</option>
+                        <option value="Python">Python</option>
+                        <option value="Java">Java</option>
+                        <option value="C++">C++</option>
+                        <option value="C#">C#</option>
+                        <option value="PHP">PHP</option>
+                        <option value="Ruby">Ruby</option>
+                        <option value="Swift">Swift</option>
+                        <option value="Kotlin">Kotlin</option>
+                        <option value="Go">Go</option>
+                        <option value="Rust">Rust</option>
+                        <option value="TypeScript">TypeScript</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="pdfFile"><i class="far fa-file-pdf"></i> Tài liệu PDF</label>
+                    <input type="file" id="pdfFile" name="pdfFile" accept=".pdf" class="file-input">
+                    <p class="file-note">Chỉ chấp nhận file PDF, kích thước tối đa 10MB</p>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn-save"><i class="fas fa-plus-circle"></i> Thêm Bài Học</button>
+                    <button type="button" class="btn-cancel" onclick="window.location.href='/learning'"><i class="fas fa-times-circle"></i> Hủy</button>
+                </div>
+            </form>
+        </div>
+      </div>
+    </main>
+    
+    <%- include('./partials/footer') %>
+</body>
+</html>

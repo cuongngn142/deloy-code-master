@@ -133,6 +133,21 @@ function initDatabase() {
             HuyHieu TEXT,
             FOREIGN KEY (MaNguoiDung) REFERENCES NguoiDung(MaNguoiDung) ON DELETE CASCADE
         )`);
+
+    // Thêm vào hàm initDatabase() sau bảng XepHang
+    
+    // Bảng BaiHoc
+    db.run(`CREATE TABLE IF NOT EXISTS BaiHoc (
+            MaBaiHoc INTEGER PRIMARY KEY AUTOINCREMENT,
+            TieuDe TEXT NOT NULL,
+            MoTa TEXT,
+            DuongDanFile TEXT,
+            NgonNguLapTrinh TEXT,
+            NgayTao DATETIME DEFAULT CURRENT_TIMESTAMP,
+            NgayCapNhat DATETIME DEFAULT CURRENT_TIMESTAMP,
+            MaNguoiTao INTEGER,
+            FOREIGN KEY (MaNguoiTao) REFERENCES NguoiDung(MaNguoiDung) ON DELETE SET NULL
+        )`);
   });
 }
 

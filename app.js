@@ -74,3 +74,9 @@ app.listen(PORT, () => {
   );
 });
 app.use("/about", aboutRouter);
+
+// Thêm vào phần khai báo routes
+const learningRouter = require('./routes/learningRoute');
+
+// Thêm vào phần sử dụng routes
+app.use('/learning', learningRouter);

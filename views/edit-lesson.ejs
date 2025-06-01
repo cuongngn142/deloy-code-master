@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- reset css -->
+    <link rel="stylesheet" href="/css/reset.css" />
+    <!-- embed fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Sen:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" href="/images/img/logo-web.png" type="image/png" />
+
+    <link rel="stylesheet" href="/css/reset.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/practice.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <title>Chỉnh Sửa Bài Học | Code Master</title>
+  </head>
+<body>
+   <header class="header fixed"><%- include('partials/header') %></header>
+    
+    <main class="practice-main">
+      <div class="main-content">
+        <form id="editLessonForm" class="practice-form">
+            <h1>Chỉnh Sửa Bài Học</h1>
+            
+            <div class="form-group">
+                <label for="tieuDe"><i class="fas fa-heading"></i> Tiêu đề bài học *</label>
+                <input type="text" id="tieuDe" name="tieuDe" value="<%= lesson.TieuDe %>" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="moTa"><i class="fas fa-align-left"></i> Mô tả</label>
+                <textarea id="moTa" name="moTa" rows="4"><%= lesson.MoTa || '' %></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="ngonNguLapTrinh"><i class="fas fa-code"></i> Ngôn ngữ lập trình</label>
+                <select id="ngonNguLapTrinh" name="ngonNguLapTrinh">
+                    <option value="" <%= !lesson.NgonNguLapTrinh ? 'selected' : '' %>>-- Chọn ngôn ngữ --</option>
+                    <option value="JavaScript" <%= lesson.NgonNguLapTrinh === 'JavaScript' ? 'selected' : '' %>>JavaScript</option>
+                    <option value="Python" <%= lesson.NgonNguLapTrinh === 'Python' ? 'selected' : '' %>>Python</option>
+                    <option value="Java" <%= lesson.NgonNguLapTrinh === 'Java' ? 'selected' : '' %>>Java</option>
+                    <option value="C++" <%= lesson.NgonNguLapTrinh === 'C++' ? 'selected' : '' %>>C++</option>
+                    <option value="C#" <%= lesson.NgonNguLapTrinh === 'C#' ? 'selected' : '' %>>C#</option>
+                    <option value="PHP" <%= lesson.NgonNguLapTrinh === 'PHP' ? 'selected' : '' %>>PHP</option>
+                    <option value="Ruby" <%= lesson.NgonNguLapTrinh === 'Ruby' ? 'selected' : '' %>>Ruby</option>
+                    <option value="Swift" <%= lesson.NgonNguLapTrinh === 'Swift' ? 'selected' : '' %>>Swift</option>
+                    <option value="Kotlin" <%= lesson.NgonNguLapTrinh === 'Kotlin' ? 'selected' : '' %>>Kotlin</option>
+                    <option value="Go" <%= lesson.NgonNguLapTrinh === 'Go' ? 'selected' : '' %>>Go</option>
+                    <option value="Rust" <%= lesson.NgonNguLapTrinh === 'Rust' ? 'selected' : '' %>>Rust</option>
+                    <option value="TypeScript" <%= lesson.NgonNguLapTrinh === 'TypeScript' ? 'selected' : '' %>>TypeScript</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="pdfFile"><i class="far fa-file-pdf"></i> Tài liệu PDF</label>
+                <% if (lesson.DuongDanFile) { %>
+                    <div class="current-file">
+                        <i class="far fa-file-pdf"></i> File hiện tại: <%= lesson.DuongDanFile.split('/').pop() %>
+                    </div>
+                <% } %>
+                <input type="file" id="pdfFile" name="pdfFile" accept=".pdf" class="file-input">
+                <p class="file-note">Chỉ chấp nhận file PDF, kích thước tối đa 10MB. Để trống nếu không muốn thay đổi file.</p>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn-save"><i class="fas fa-save"></i> Lưu thay đổi</button>
+                <button type="button" class="btn-cancel" onclick="window.location.href='/learning/<%= lesson.MaBaiHoc %>'"><i class="fas fa-times-circle"></i> Hủy chỉnh sửa</button>
+            </div>
+        </form>
+      </div>
+    </main>
+    
+    <%- include('./partials/footer') %>
+    
+    <script>
+        document.getElementById('editLessonForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            
+            try {
+                // Kiểm tra dữ liệu
+                if (!formData.get('tieuDe').trim()) {
+                    throw new Error('Tiêu đề không được để trống');
+                }
+                
+                // Gửi form thông thường
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/learning/<%= lesson.MaBaiHoc %>/edit';
+                form.enctype = 'multipart/form-data';
+                form.style.display = 'none';
+                
+                // Thêm dữ liệu từ FormData vào form
+                for (const [key, value] of formData.entries()) {
+                    const input = document.createElement('input');
+                    input.type = 'file' ? 'file' : 'text';
+                    input.name = key;
+                    input.value = value;
+                    form.appendChild(input);
+                }
+                
+                document.body.appendChild(form);
+                form.submit();
+                
+            } catch (error) {
+                alert(error.message || 'Có lỗi xảy ra khi cập nhật bài học!');
+            }
+        });
+    </script>
+</body>
+</html>
