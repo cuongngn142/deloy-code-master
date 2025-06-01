@@ -72,6 +72,7 @@ router.post("/login", async (req, res) => {
       email: user.Email,
       hoTen: user.HoTen,
       vaiTro: user.VaiTro,
+      Avatar: user.Avatar  // Thêm trường Avatar vào session
     };
 
     res.json({

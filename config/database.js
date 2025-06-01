@@ -22,6 +22,7 @@ function initDatabase() {
             Email TEXT NOT NULL UNIQUE,
             MatKhau TEXT NOT NULL,
             VaiTro TEXT NOT NULL CHECK(VaiTro IN ('Admin', 'User')),
+            Avatar TEXT,
             NgayTao DATETIME DEFAULT CURRENT_TIMESTAMP
         )`);
 

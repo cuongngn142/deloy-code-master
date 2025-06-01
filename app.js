@@ -3,6 +3,7 @@ const app = express();
 const path = require("path");
 const cors = require('cors');
 const session = require("express-session");
+const FileStore = require('session-file-store')(session); // Thêm dòng này
 const database = require("./config/database");
 const topicRoutes = require("./routes/topicRoutes");
 const practiceRoutes = require("./routes/practiceRoute");
@@ -23,6 +24,11 @@ app.use(
     secret: "codemaster-secret-key",
     resave: false,
     saveUninitialized: true,
+    store: new FileStore({ // Thêm cấu hình store
+      path: './sessions', // Thư mục lưu file session
+      ttl: 86400, // Thời gian sống của session (1 ngày)
+      retries: 0
+    }),
     cookie: { secure: false },
   })
 );

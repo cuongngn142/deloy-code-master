@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
+const { query, run } = require('../config/database');
+const UserModel = require('../models/userModel');
 
 // Cấu hình multer cho upload ảnh
 const storage = multer.diskStorage({
@@ -37,6 +39,7 @@ router.get('/', (req, res) => {
     if (!req.session.user) {
         return res.redirect('/');
     }
+
     res.render('profile', { user: req.session.user });
 });
 
@@ -47,16 +50,29 @@ router.post('/avatar', upload.single('avatar'), async (req, res) => {
             return res.json({ success: false, message: 'No file uploaded' });
         }
 
+       
         const avatarUrl = `/uploads/avatars/${req.file.filename}`;
         
+        // Kiểm tra nếu MaNguoiDung không tồn tại, dùng id thay thế
+        const userId = req.session.user.MaNguoiDung || req.session.user.id;
+        
+      
+        
+        if (!userId) {
+            console.error('No user ID found in session');
+            return res.json({ success: false, message: 'Không thể xác định người dùng' });
+        }
+        
         // Cập nhật URL avatar trong database
-        // ... code cập nhật database ...
-
+        const result = await UserModel.updateAvatar(userId, avatarUrl);
+       
+        
         // Cập nhật session
         req.session.user.Avatar = avatarUrl;
 
         res.json({ success: true, avatarUrl });
     } catch (error) {
+        console.error('DEBUG avatar upload error:', error);
         res.json({ success: false, message: error.message });
     }
 });
