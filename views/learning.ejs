@@ -75,14 +75,14 @@
                 <h3 class="practice-title"><%= lesson.TieuDe %></h3>
                 <p class="practice-description"><%= lesson.MoTa || 'Không có mô tả' %></p>
                 <div class="lesson-meta">
-                  <span><i class="far fa-calendar-alt"></i> <%= new Date(lesson.NgayCapNhat).toLocaleDateString('vi-VN') %></span>
                   <span><i class="far fa-user"></i> <%= lesson.TenNguoiTao || 'Admin' %></span>
+                  &ensp;<span><i class="far fa-calendar-alt"></i> <%= new Date(lesson.NgayCapNhat).toLocaleDateString('vi-VN') %></span>
                 </div>
               </div>
               <div class="practice-buttons">
                 <button
                   class="btn-solve"
-                  onclick="window.location.href='/learning/<%= lesson.MaBaiHoc %>'"
+                  onclick="window.location.href='/learning/<%= lesson.MaBaiHoc %>/details'"
                 >
                   Xem bài học
                 </button>

@@ -22,7 +22,122 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
     />
     <title>Chi Tiết Bài Học | Code Master</title>
-  </head>
+
+    <!-- PDF to Markdown styles -->
+    <style>
+        .pdf-converter {
+            margin: 20px 0;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .pdf-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .convert-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .convert-btn:hover {
+            background: #2980b9;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+            color: #3498db;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .converted-content {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .rendered-content {
+            line-height: 1.8;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border: 1px solid #e9ecef;
+        }
+
+        .rendered-content h1,
+        .rendered-content h2,
+        .rendered-content h3 {
+            margin: 20px 0 10px 0;
+            color: #2c3e50;
+        }
+
+        .rendered-content p {
+            margin-bottom: 15px;
+        }
+
+        .rendered-content ul,
+        .rendered-content ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        .rendered-content li {
+            margin-bottom: 5px;
+        }
+
+        .download-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .download-btn:hover {
+            background: #219a52;
+        }
+
+        .error-message {
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            display: none;
+        }
+    </style>
+</head>
 <body>
     <header class="header fixed"><%- include('partials/header') %></header>
     
@@ -49,8 +164,28 @@
           </div>
           
           <% if (lesson.DuongDanFile) { %>
-              <div class="pdf-container">
-                  <iframe src="<%= lesson.DuongDanFile %>" width="100%" height="600px" style="border: none;"></iframe>
+              <div class="pdf-converter">
+                  <div class="pdf-actions">
+                      <a href="<%= lesson.DuongDanFile %>" class="download-btn" download>
+                          <i class="fas fa-file-pdf"></i> Tải xuống PDF
+                      </a>
+                  </div>
+                  
+                  <div class="loading" id="loading">
+                      <div class="spinner"></div>
+                      <div>Đang xử lý file PDF...</div>
+                  </div>
+
+                  <div class="error-message" id="errorMessage"></div>
+
+                  <div class="converted-content" id="convertedContent">
+                      <div class="result-panel">
+                          
+                          <div class="panel-content">
+                              <div class="rendered-content" id="renderedContent"></div>
+                          </div>
+                      </div>
+                  </div>
               </div>
           <% } else { %>
               <div class="no-pdf">
@@ -63,7 +198,7 @@
                   <button class="btn-edit" onclick="window.location.href='/learning/<%= lesson.MaBaiHoc %>/edit'">
                       <i class="fas fa-edit"></i> Sửa bài học
                   </button>
-                  <button class="btn-delete" onclick="deleteLesson()">
+                  <button class="btn-delete" onclick="confirmDelete()">
                       <i class="fas fa-trash"></i> Xóa bài học
                   </button>
               </div>
@@ -72,40 +207,195 @@
       </div>
     </main>
     
-    <div class="delete-confirm" id="deleteConfirm">
-        <div class="delete-confirm-content">
-            <h3>Bạn có chắc chắn muốn xóa bài học này?</h3>
-            <div class="delete-confirm-buttons">
-                <a href="/learning/<%= lesson.MaBaiHoc %>/delete" class="confirm-btn">Xóa</a>
-                <button class="cancel-btn" id="cancelDelete">Hủy</button>
-            </div>
-        </div>
-    </div>
-    
     <%- include('./partials/footer') %>
     
+    <!-- Thư viện để render Markdown -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.3.0/marked.min.js"></script>
+    <!-- Thư viện để đọc PDF (PDF.js) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    
     <script>
+        // Cấu hình PDF.js
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        let convertedMarkdown = '';
+
+        // DOM elements
+        const loading = document.getElementById('loading');
+        const errorMessage = document.getElementById('errorMessage');
+        const convertedContent = document.getElementById('convertedContent');
+        const renderedContent = document.getElementById('renderedContent');
+
+        // Download button
+
+        // Tự động chuyển đổi khi trang được tải
         document.addEventListener('DOMContentLoaded', function() {
-            const deleteBtn = document.querySelector('.btn-delete');
-            const deleteConfirm = document.getElementById('deleteConfirm');
-            const cancelDelete = document.getElementById('cancelDelete');
-            
-            if (deleteBtn) {
-                deleteBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    deleteConfirm.style.display = 'flex';
-                });
-            }
-            
-            if (cancelDelete) {
-                cancelDelete.addEventListener('click', function() {
-                    deleteConfirm.style.display = 'none';
-                });
+            const pdfUrl = '<%= lesson.DuongDanFile %>';
+            if (pdfUrl) {
+                convertPdfToMarkdown();
             }
         });
-        
-        function deleteLesson() {
-            document.getElementById('deleteConfirm').style.display = 'flex';
+
+        async function convertPdfToMarkdown() {
+            const pdfUrl = '<%= lesson.DuongDanFile %>';
+            if (!pdfUrl) return;
+
+            showLoading();
+            hideError();
+            
+            try {
+                // Đọc file PDF
+                const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
+                
+                let fullText = '';
+                
+                // Trích xuất text từ tất cả các trang
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+                    
+                    let pageText = '';
+                    let currentY = null;
+                    let lineHeight = 0;
+                    
+                    textContent.items.forEach((item, index) => {
+                        const y = item.transform[5];
+                        const height = item.height;
+                        
+                        // Phát hiện dòng mới dựa trên vị trí Y
+                        if (currentY === null) {
+                            currentY = y;
+                            lineHeight = height;
+                        }
+                        
+                        if (Math.abs(y - currentY) > lineHeight * 0.5) {
+                            pageText += '\n';
+                            currentY = y;
+                        }
+                        
+                        pageText += item.str + ' ';
+                    });
+                    
+                    fullText += `\n\n## Trang ${i}\n\n${pageText.trim()}\n`;
+                }
+                
+                // Chuyển đổi thành Markdown format đẹp hơn
+                convertedMarkdown = formatToMarkdown(fullText);
+                
+                // Hiển thị kết quả
+                displayResults();
+                
+            } catch (error) {
+                console.error('Lỗi khi chuyển đổi PDF:', error);
+                showError('Có lỗi xảy ra khi chuyển đổi PDF. Vui lòng thử lại.');
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function formatToMarkdown(text) {
+            let markdown = text;
+            
+            // Loại bỏ các dòng trống thừa
+            markdown = markdown.replace(/\n{3,}/g, '\n\n');
+            
+            // Loại bỏ các dòng "## Trang X"
+            markdown = markdown.replace(/## Trang \d+\n*/g, '');
+            
+            // Tự động phát hiện tiêu đề (các dòng ngắn có thể là tiêu đề)
+            const lines = markdown.split('\n');
+            const formattedLines = lines.map(line => {
+                const trimmed = line.trim();
+                
+                // Bỏ qua dòng trống và markdown headers hiện tại
+                if (!trimmed || trimmed.startsWith('#')) {
+                    return line;
+                }
+                
+                // Phát hiện tiêu đề potencial (dòng ngắn, không có dấu câu cuối)
+                if (trimmed.length < 100 && 
+                    !trimmed.endsWith('.') && 
+                    !trimmed.endsWith(',') && 
+                    !trimmed.endsWith(';') &&
+                    trimmed.length > 5) {
+                    
+                    // Kiểm tra xem có phải là tiêu đề không (heuristic đơn giản)
+                    if (trimmed.split(' ').length <= 10) {
+                        return `### ${trimmed}`;
+                    }
+                }
+                
+                return line;
+            });
+            
+            markdown = formattedLines.join('\n');
+            
+            // Thêm header theo format mới
+            const now = new Date().toLocaleDateString('vi-VN');
+            const fileName = '<%= lesson.TieuDe %>';
+            const header = `# **${fileName}**
+
+#### *${now}*
+
+`;
+            
+            return header + markdown;
+        }
+
+        function displayResults() {
+            renderedContent.innerHTML = marked.parse(convertedMarkdown);
+            convertedContent.style.display = 'block';
+        }
+
+        function downloadHtml() {
+            const htmlContent = `<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= lesson.TieuDe %></title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1, h2, h3 { color: #2c3e50; }
+        p { margin-bottom: 15px; }
+        ul, ol { margin: 15px 0; padding-left: 30px; }
+    </style>
+</head>
+<body>
+${marked.parse(convertedMarkdown)}
+</body>
+</html>`;
+            
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = '<%= lesson.TieuDe %>.html';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function showLoading() {
+            loading.style.display = 'block';
+        }
+
+        function hideLoading() {
+            loading.style.display = 'none';
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+
+        function confirmDelete() {
+            if (confirm('Bạn có chắc chắn muốn xóa bài học này?')) {
+                window.location.href = '/learning/<%= lesson.MaBaiHoc %>/delete';
+            }
         }
     </script>
 </body>

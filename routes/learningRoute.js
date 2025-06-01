@@ -43,7 +43,8 @@ router.get('/add', LearningController.showAddForm);
 router.post('/add', upload.single('pdfFile'), LearningController.addLesson);
 
 // Hiển thị chi tiết bài học
-router.get('/:id', LearningController.showLessonDetail);
+
+router.get('/:id/details', LearningController.showLessonDetail);
 
 // Hiển thị form sửa bài học
 router.get('/:id/edit', LearningController.showEditForm);
