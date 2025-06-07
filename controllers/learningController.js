@@ -67,7 +67,7 @@ class LearningController {
                     duongDanFile = `/uploads/lessons/${req.files.inputFile[0].filename}`;
                 }
                 if (req.files.imageFile && req.files.imageFile[0]) {
-                    imagePath = `/uploads/images/${req.files.imageFile[0].filename}`;
+                    imagePath = `/images/img/${req.files.imageFile[0].filename}`;
                 }
             }
 
