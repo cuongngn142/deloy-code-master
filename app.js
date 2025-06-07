@@ -1,9 +1,9 @@
 const express = require("express");
 const app = express();
 const path = require("path");
-const cors = require('cors');
+const cors = require("cors");
 const session = require("express-session");
-const FileStore = require('session-file-store')(session); // Thêm dòng này
+const FileStore = require("session-file-store")(session); // Thêm dòng này
 const database = require("./config/database");
 const topicRoutes = require("./routes/topicRoutes");
 const practiceRoutes = require("./routes/practiceRoute");
@@ -24,13 +24,14 @@ app.use(
     secret: "codemaster-secret-key",
     resave: false,
     saveUninitialized: true,
-    store: new FileStore({ // Thêm cấu hình store
-      path: './sessions', // Thư mục lưu file session
+    store: new FileStore({
+      // Thêm cấu hình store
+      path: "./sessions", // Thư mục lưu file session
       ttl: 86400, // Thời gian sống của session (1 ngày)
-      retries: 0
+      retries: 0,
     }),
     cookie: { secure: false },
-  })
+  }),
 );
 
 app.set("view engine", "ejs");
@@ -70,13 +71,13 @@ app.get("/logout", (req, res) => {
 
 app.listen(PORT, () => {
   console.log(
-    `🚀 Server đang chạy tại: \x1b[34mhttp://localhost:${PORT}\x1b[0m`
+    `🚀 Server đang chạy tại: \x1b[34mhttp://localhost:${PORT}\x1b[0m`,
   );
 });
 app.use("/about", aboutRouter);
 
 // Thêm vào phần khai báo routes
-const learningRouter = require('./routes/learningRoute');
+const learningRouter = require("./routes/learningRoute");
 
 // Thêm vào phần sử dụng routes
-app.use('/learning', learningRouter);
+app.use("/learning", learningRouter);

@@ -30,12 +30,12 @@ class LearningModel {
         }
     }
 
-    async createLesson(tieuDe, moTa, duongDanFile, ngonNguLapTrinh, maNguoiTao) {
+    async createLesson(tieuDe, moTa, duongDanFile, ngonNguLapTrinh, maNguoiTao, imagePath = null) {
         try {
             const result = await run(
-                `INSERT INTO BaiHoc (TieuDe, MoTa, DuongDanFile, NgonNguLapTrinh, MaNguoiTao) 
-                VALUES (?, ?, ?, ?, ?)`,
-                [tieuDe, moTa, duongDanFile, ngonNguLapTrinh, maNguoiTao]
+                `INSERT INTO BaiHoc (TieuDe, MoTa, DuongDanFile, NgonNguLapTrinh, MaNguoiTao, Image) 
+                VALUES (?, ?, ?, ?, ?, ?)`,
+                [tieuDe, moTa, duongDanFile, ngonNguLapTrinh, maNguoiTao, imagePath]
             );
             return result;
         } catch (error) {
@@ -43,16 +43,17 @@ class LearningModel {
         }
     }
 
-    async updateLesson(maBaiHoc, tieuDe, moTa, duongDanFile, ngonNguLapTrinh) {
+    async updateLesson(maBaiHoc, tieuDe, moTa, duongDanFile, ngonNguLapTrinh, imagePath = null) {
         try {
             const result = await run(
                 `UPDATE BaiHoc 
                 SET TieuDe = ?, MoTa = ?, 
                     DuongDanFile = COALESCE(?, DuongDanFile), 
-                    NgonNguLapTrinh = ?, 
+                    NgonNguLapTrinh = ?,
+                    Image = COALESCE(?, Image),
                     NgayCapNhat = CURRENT_TIMESTAMP 
                 WHERE MaBaiHoc = ?`,
-                [tieuDe, moTa, duongDanFile, ngonNguLapTrinh, maBaiHoc]
+                [tieuDe, moTa, duongDanFile, ngonNguLapTrinh, imagePath, maBaiHoc]
             );
             return result;
         } catch (error) {
