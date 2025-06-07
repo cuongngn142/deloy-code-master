@@ -243,6 +243,11 @@
         return;
       }
 
+      if (matKhau.length < 6) {
+        showError("Mật khẩu phải có độ dài từ 6 kí tự");
+        return;
+      }
+
       try {
         const res = await fetch("/auth/register", {
           method: "POST",
